@@ -1,6 +1,6 @@
 import pygame
-
-from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS
+import random
+from dino_runner.utils.constants import BG, CLOUD, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS
 from dino_runner.components.dinosaur import Dinosaur
 
 class Game:
@@ -14,6 +14,8 @@ class Game:
         self.game_speed = 20
         self.x_pos_bg = 0
         self.y_pos_bg = 380
+        self.x_pos_cloud = self.screen.get_width()
+        self.y_pos_cloud = random.randint(0, self.screen.get_height() - CLOUD.get_height())
         self.player =  Dinosaur()
 
     def run(self):
@@ -38,6 +40,7 @@ class Game:
         self.clock.tick(FPS)
         self.screen.fill((255, 255, 255))
         self.draw_background()
+        self.draw_cloud()
         self.player.draw(self.screen)
         pygame.display.update()
         pygame.display.flip()
@@ -50,3 +53,11 @@ class Game:
             self.screen.blit(BG, (image_width + self.x_pos_bg, self.y_pos_bg))
             self.x_pos_bg = 0
         self.x_pos_bg -= self.game_speed
+
+    def draw_cloud(self):
+        image_width = CLOUD.get_width()
+        self.screen.blit(CLOUD, (self.x_pos_cloud, self.y_pos_cloud))
+        self.x_pos_cloud -= self.game_speed
+        if self.x_pos_cloud <= -image_width:
+            self.x_pos_cloud = self.screen.get_width()
+            self.y_pos_cloud = random.randint(0, 300)
