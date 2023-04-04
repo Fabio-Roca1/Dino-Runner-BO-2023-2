@@ -39,7 +39,8 @@ class Dinosaur:
         elif not self.dino_jump:
             self.dino_run = True
             self.dino_duck = False
-            self.dino_jump = False                       
+            self.dino_jump = False  
+            self.dino_dead = False                     
         
         if self.step_index >= 10:
             self.step_index = 0
