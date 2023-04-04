@@ -1,6 +1,5 @@
 import pygame
-from dino_runner.utils.constants import RUNNING, JUMPING, DUCKING
-
+from dino_runner.utils.constants import RUNNING, JUMPING, DUCKING, DEAD
 
 class Dinosaur:
     X_POS = 80
@@ -18,16 +17,17 @@ class Dinosaur:
         self.dino_duck = True
         self.dino_jump = False
         self.jump_vel = self.JUMP_VEL
+        self.dino_dead = False
         
     
-    def update(self, user_input):
+    def update(self, user_input, obstacles):
         if self.dino_jump:
             self.jump()
         if self.dino_duck:
             self.duck()
         if self.dino_run:
             self.run()
-        
+            
         if user_input[pygame.K_DOWN] and not self.dino_jump:
             self.dino_run = False
             self.dino_duck = True
@@ -40,14 +40,27 @@ class Dinosaur:
             self.dino_run = True
             self.dino_duck = False
             self.dino_jump = False  
-            self.dino_dead = False                     
+            
+        for obstacle in obstacles:
+            if self.dino_rect.colliderect(obstacle.rect):
+                self.dino_dead = True
+                self.dino_run = False
+                self.dino_duck = False
+                self.dino_jump = False
+                break
+            
+        if self.dino_dead:
+            self.dead()              
         
         if self.step_index >= 10:
             self.step_index = 0
         
         
     def draw(self, screen):
-        screen.blit(self.image, self.dino_rect)
+        if not self.dino_dead:
+            screen.blit(self.image, self.dino_rect)
+        else:
+            screen.blit(DEAD, self.dino_rect)
 
     def run(self):
         self.image = RUNNING[0] if self.step_index < 5 else RUNNING[1]
@@ -72,5 +85,10 @@ class Dinosaur:
             self.dino_rect.y = self.Y_POS
             self.dino_jump = False
             self.jump_vel = self.JUMP_VEL
-    
-    
+        
+    def dead(self):
+        self.image = DEAD
+        self.dino_rect.y = self.Y_POS
+        self.dino_run = False
+        self.dino_duck = False
+        self.dino_jump = False

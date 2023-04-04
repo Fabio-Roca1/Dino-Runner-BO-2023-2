@@ -36,7 +36,7 @@ class Game:
 
     def update(self):
         user_input = pygame.key.get_pressed()
-        self.player.update(user_input)
+        self.player.update(user_input, self.obstacle_manager.obstacles)
         self.obstacle_manager.update(self.game_speed, self.player)
         if self.player.dino_dead:
             self.playing = False
