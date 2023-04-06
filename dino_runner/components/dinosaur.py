@@ -23,6 +23,8 @@ class Dinosaur:
         self.dino_jump = False
         self.jump_vel = self.JUMP_VEL
         self.dino_dead = False
+        self.shield = False
+        self.time_up_power_up = 0
         
     
     def update(self, user_input, obstacles):
@@ -48,18 +50,23 @@ class Dinosaur:
             
         for obstacle in obstacles:
             if self.dino_rect.colliderect(obstacle.rect):
-                self.dino_dead = True
-                self.dino_run = False
-                self.dino_duck = False
-                self.dino_jump = False
-                break
-            
+                if not self.shield or self.time_up_power_up < pygame.time.get_ticks():
+                    self.dino_dead = True
+                    self.dino_run = False
+                    self.dino_duck = False
+                    self.dino_jump = False
+                    break
+                
         if self.dino_dead:
             self.dead()              
-        
+            
         if self.step_index >= 10:
             self.step_index = 0
-        
+                
+        if self.shield:
+            time_to_show = round((self.time_up_power_up - pygame.time.get_ticks()) / 1000, 2)
+            if time_to_show < 0:
+                self.reset()
         
     def draw(self, screen):
         if not self.dino_dead:
@@ -101,5 +108,13 @@ class Dinosaur:
     def set_power_up(self, power_up):
         if power_up.type == SHIELD_TYPE:
             self.type = SHIELD_TYPE
-        elif power_up.type == HAMMMER_TYPE:
+            self.shield = True
+            self.time_up_power_up = power_up.time_up
+            
+        if power_up.type == HAMMMER_TYPE:
             self.type = HAMMMER_TYPE
+               
+    def reset(self):
+        self.type = DEFAULT_TYPE
+        self.shield = False
+        self.time_up_power_up = 0

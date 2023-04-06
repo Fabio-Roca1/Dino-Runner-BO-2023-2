@@ -8,7 +8,7 @@ class PowerUpManager:
         self.power_up_counter = 0
         
     def update(self, game_speed, points, player):
-        if points >= 400 and self.power_up_counter == 0:
+        if points >= 100 and self.power_up_counter == 0:
             if random.choice([True, False]):
                 self.power_ups.append(Shield())
             else:
