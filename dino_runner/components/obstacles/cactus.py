@@ -17,3 +17,4 @@ class Cactus(Obstacle):
             y_pos = 300
         super().__init__(image)
         self.rect.y = y_pos
+        

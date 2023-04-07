@@ -1,6 +1,6 @@
 import pygame
 from dino_runner.utils.constants import (RUNNING, RUNNING_SHIELD, RUNNING_HAMMER, JUMPING ,JUMPING_SHIELD, JUMPING_HAMMER, DUCKING, DUCKING_SHIELD, DUCKING_HAMMER, DEAD,
-                                        DEFAULT_TYPE, SHIELD_TYPE, HAMMMER_TYPE)
+                                        DEFAULT_TYPE, SHIELD_TYPE, HAMMMER_TYPE, HAMMER2)
 
 class Dinosaur:
     X_POS = 80
@@ -24,7 +24,9 @@ class Dinosaur:
         self.jump_vel = self.JUMP_VEL
         self.dino_dead = False
         self.shield = False
+        self.hammer = False
         self.time_up_power_up = 0
+        
         
     
     def update(self, user_input, obstacles):
@@ -51,11 +53,14 @@ class Dinosaur:
         for obstacle in obstacles:
             if self.dino_rect.colliderect(obstacle.rect):
                 if not self.shield or self.time_up_power_up < pygame.time.get_ticks():
-                    self.dino_dead = True
-                    self.dino_run = False
-                    self.dino_duck = False
-                    self.dino_jump = False
-                    break
+                    if self.hammer:
+                        obstacles.pop(obstacle)
+                    else:
+                        self.dino_dead = True
+                        self.dino_run = False
+                        self.dino_duck = False
+                        self.dino_jump = False
+                        break
                 
         if self.dino_dead:
             self.dead()              
@@ -67,6 +72,9 @@ class Dinosaur:
             time_to_show = round((self.time_up_power_up - pygame.time.get_ticks()) / 1000, 2)
             if time_to_show < 0:
                 self.reset()
+                
+                
+                
         
     def draw(self, screen):
         if not self.dino_dead:
@@ -113,8 +121,11 @@ class Dinosaur:
             
         if power_up.type == HAMMMER_TYPE:
             self.type = HAMMMER_TYPE
+            self.hammer = True
+            self.time_up_power_up = power_up.time_up
                
     def reset(self):
         self.type = DEFAULT_TYPE
         self.shield = False
+        self.hammer = False
         self.time_up_power_up = 0
